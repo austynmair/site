@@ -1,0 +1,23 @@
+---
+import { getCollection } from "astro:content";
+const eventsEntries = await getCollection("events");
+---
+
+<div class="join join-vertical w-full">
+  {
+    eventsEntries.map((e) => (
+      <div class="collapse collapse-arrow join-item border border-base-300">
+        <input type="radio" name="event-accordion" checked="checked" />
+        <div class="collapse-title text-xl font-medium text-primary prose prose-h2:h2">
+          {e.data.title}
+          <p class="prose prose-slate">
+            {e.data.date}, {e.data.start} @{e.data.location}
+          </p>
+        </div>
+        <div class="collapse-content prose prose-slate">
+          {e.body}
+        </div>
+      </div>
+    ))
+  }
+</div>
