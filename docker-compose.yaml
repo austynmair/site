@@ -1,0 +1,52 @@
+version: "3.8"
+services:
+  traefik-reverse-proxy:
+    image: traefik:2.10
+    ports:
+      - "80:80"
+      - "8080:8080"
+      - "443:443"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.yaml:/etc/traefik/traefik.yaml
+    depends_on:
+      - frontend
+      - whoami
+    labels: # traefik-ception !
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.${AMSOC_ROOT}`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+    networks:
+      - amsocnet
+
+  whoami:
+    # A container that exposes an API to show its IP address
+    image: traefik/whoami
+    command:
+      - "--port=2020"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.${AMSOC_ROOT}`)"
+      - "traefik.http.routers.whoami.entrypoints=websecure"
+      - "traefik.http.routers.whoami.tls=true"
+      - "traefik.http.services.whoami.loadbalancer.server.port=2020"
+    networks:
+      - amsocnet
+
+  frontend:
+    build: frontend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`${AMSOC_ROOT}`)||Host(`www.${AMSOC_ROOT}`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls=true"
+      - "traefik.http.services.frontend.loadbalancer.server.port=4321"
+    networks:
+      - amsocnet
+
+networks:
+  amsocnet:
