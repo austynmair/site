@@ -4,36 +4,38 @@ services:
     image: traefik:2.10
     ports:
       - "80:80"
-      - "8080:8080"
       - "443:443"
     volumes:
-      # So that Traefik can listen to the Docker events
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock # docker event listener
       - ./traefik.yaml:/etc/traefik/traefik.yaml
     depends_on:
-      - frontend
       - whoami
+      - frontend
+      - auth
     labels: # traefik-ception !
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.${AMSOC_ROOT}`)"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.amsoc.co.uk`)"
       - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.tls=true"
       - "traefik.http.routers.traefik.service=api@internal"
-      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+      - "traefik.http.routers.traefik.middlewares=auth@docker"
     networks:
       - amsocnet
 
-  whoami:
-    # A container that exposes an API to show its IP address
+  whoami: # dummy service
     image: traefik/whoami
     command:
       - "--port=2020"
+    depends_on:
+      - auth
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`whoami.${AMSOC_ROOT}`)"
+      - "traefik.http.services.whoami.loadbalancer.server.port=2020"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.amsoc.co.uk`)"
       - "traefik.http.routers.whoami.entrypoints=websecure"
       - "traefik.http.routers.whoami.tls=true"
-      - "traefik.http.services.whoami.loadbalancer.server.port=2020"
+
     networks:
       - amsocnet
 
@@ -41,10 +43,31 @@ services:
     build: frontend
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`${AMSOC_ROOT}`)||Host(`www.${AMSOC_ROOT}`)"
+      - "traefik.http.services.frontend.loadbalancer.server.port=4321"
+      - "traefik.http.routers.frontend.rule=Host(`amsoc.co.uk`)||Host(`www.amsoc.co.uk`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.tls=true"
-      - "traefik.http.services.frontend.loadbalancer.server.port=4321"
+    networks:
+      - amsocnet
+
+  auth:
+    build: auth
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.auth.loadbalancer.server.port=3000"
+      - "traefik.http.services.auth.loadbalancer.sticky.cookie.name=connect.sid" # for express-session
+      - "traefik.http.services.auth.loadbalancer.sticky.cookie.secure=true"
+      - "traefik.http.services.auth.loadbalancer.sticky.cookie.httpOnly=true"
+      - "traefik.http.routers.auth.rule=Host(`auth.amsoc.co.uk`)"
+      - "traefik.http.routers.auth.entrypoints=websecure"
+      - "traefik.http.routers.auth.tls=true"
+      - "traefik.http.middlewares.auth.forwardauth.address=http://auth:3000/login"
+      - "traefik.http.middlewares.auth.forwardauth.trustForwardHeader=true"
+      - "traefik.http.middlewares.auth.forwardauth.tls.insecureSkipVerify=true"
+    environment: # secrets supplied by doppler
+      - "SESSION_KEY=${SESSION_KEY}"
+      - "LUCAS_PUBLIC_KEY=${LUCAS_PUBLIC_KEY}"
+      - "LUCAS_PRIVATE_KEY=${LUCAS_PRIVATE_KEY}"
     networks:
       - amsocnet
 

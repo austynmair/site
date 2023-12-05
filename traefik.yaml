@@ -1,6 +1,13 @@
+serversTransport:
+  insecureSkipVerify: true # https://community.traefik.io/t/insecureskipverify-explanation/2195/2
+log:
+  level: DEBUG
 api:
   dashboard: true
   debug: true
+  insecure: false
+ping:
+  entryPoint: websecure
 providers:
   docker:
     exposedByDefault: true
@@ -12,5 +19,10 @@ entryPoints:
         entryPoint:
           to: websecure
           scheme: https
+    # forwardedHeaders:
+    #   insecure: true
   websecure:
     address: :443
+    # forwardedHeaders:
+    #   insecure: true
+

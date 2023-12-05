@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "nodemon src/index.ts",
     "build": "tsc"
   },
   "keywords": [],
@@ -13,13 +13,18 @@
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.3",
     "@types/express": "^4.17.20",
+    "@types/express-session": "^1.17.9",
     "@types/node": "^20.8.10",
-    "@types/passport-saml": "^1.1.5",
+    "@types/passport": "^1.0.14",
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "@node-saml/passport-saml": "^4.0.4",
+    "body-parser": "^1.20.2",
     "express": "^4.18.2",
-    "passport": "^0.6.0",
-    "ts-node": "^10.9.1"
+    "express-session": "^1.17.3",
+    "passport": "^0.6.0"
   }
 }
