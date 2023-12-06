@@ -82,24 +82,7 @@ app.get(
   "/Shibboleth.sso/Metadata",
   cam.sendServiceProviderMetadata(strategy, process.env.LUCAS_PUBLIC as string)
 );
-app.post(
-  "/login/callback",
-  (req, res, next) => {
-    console.log("callback", req.body);
-    next();
-  },
-  passport.authenticate(strategy, { session: true }),
-  (req, res) => {
-    req.session.loggedIn = req.isAuthenticated();
-    req.session.save(() => {
-      return res.redirect(
-        req.session.loggedIn
-          ? decodeURIComponent(req.body.RelayState)
-          : "/login"
-      );
-    }); // https://stackoverflow.com/a/26532987
-  }
-);
+
 declare module "express-session" {
   interface Session {
     loggedIn: boolean;
@@ -133,6 +116,14 @@ app.use(
     })(req, res, next);
   }
 );
+app.post("/login/callback", (req, res) => {
+  req.session.loggedIn = req.isAuthenticated();
+  req.session.save(() => {
+    return res.redirect(
+      req.session.loggedIn ? decodeURIComponent(req.body.RelayState) : "/login"
+    );
+  }); // https://stackoverflow.com/a/26532987
+});
 app.get("/login", (req, res) => {
   res.send("Not logged in");
 });
