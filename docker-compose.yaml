@@ -41,6 +41,7 @@ services:
 
   frontend:
     build: frontend
+    init: true # propagate sigterm to node.js
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.frontend.loadbalancer.server.port=4321"
@@ -52,6 +53,7 @@ services:
 
   auth:
     build: auth
+    init: true # propagate sigterm to node.js
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.auth.loadbalancer.server.port=3000"
