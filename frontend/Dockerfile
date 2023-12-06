@@ -1,15 +1,15 @@
-FROM node:lts AS base
+FROM node:lts-slim AS base
 WORKDIR /app
 
 # By copying only the package.json and package-lock.json here, we ensure that the following `-deps` steps are independent of the source code.
 # Therefore, the `-deps` steps will be skipped if only the source code changes.
-COPY package.json pnpm-lock.yaml ./
+COPY package.json package-lock.json ./
 
 FROM base AS prod-deps
-RUN npm install --production
+RUN npm ci --omit=dev
 
 FROM base AS build-deps
-RUN npm install --production=false
+RUN npm ci
 
 FROM build-deps AS build
 COPY . .
