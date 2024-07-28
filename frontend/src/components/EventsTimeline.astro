@@ -1,0 +1,46 @@
+---
+import { getCollection } from "astro:content";
+const eventsEntries = await getCollection("events");
+---
+
+<ul class="timeline max-md:timeline-compact timeline-vertical">
+  {
+    eventsEntries.map((e, index, array) => (
+      <li>
+        {index > 0 ? <hr class="bg-white" /> : ""}
+        <div class="timeline-start md:text-end text-base">
+          <time class="text-base font-mono italic">{e.data.date}</time>
+        </div>
+        <div class="timeline-middle">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            class="h-10 w-10"
+          >
+          <circle cx="10" cy="10" r="4" fill="currentColor" />
+          </svg>
+        </div>
+        <a href={"/"+encodeURIComponent(e.data.title.replaceAll(" ", "-"))} class="timeline-end timeline-box border-none hover:shadow-md transition-all ring-white hover:ring-1 active:ring-4 md:text-start mt-5 mb-5">
+          <div class="text-lg">{e.data.title}</div>
+          <!--<div>
+            <time class="text-base font-mono italic">
+              {e.data.start} @{e.data.location}
+            </time>
+          </div>-->
+        <!--{e.body}-->
+        </a>
+        {index < array.length - 1 ? <hr class="bg-white" /> : ""}
+      </li>
+    ))
+  }
+</ul>
+
+<!-- Override annoying DaisyUI defaults -->
+<!-- <style>
+    .timeline-start{
+        grid-row-start: 1;
+        grid-row-end: 3;
+        align-self: stretch;
+    }
+</style> -->

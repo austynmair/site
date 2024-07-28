@@ -1,0 +1,27 @@
+---
+import { Image } from "astro:assets";
+import bgImg from "../assets/landing.jpg";
+---
+
+<Image
+  src={bgImg}
+  alt="Downing College Chapel in the snow"
+  class="fixed bottom-0 left-0 h-5/6 object-cover"
+/>
+
+<style>
+  img {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      rgba(0, 0, 0, 0.7),
+      rgba(0, 0, 0, 1)
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      rgba(0, 0, 0, 0.7),
+      rgba(0, 0, 0, 1)
+    );
+  }
+</style>

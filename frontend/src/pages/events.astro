@@ -1,0 +1,17 @@
+---
+import { Image } from "astro:assets";
+import Layout from "../layouts/Layout.astro";
+import Navbar from "../components/Navbar.astro";
+import EventsTimeline from "../components/EventsTimeline.astro";
+import EventsAccordion from "../components/EventsAccordion.astro";
+import Test from "../components/Test.svelte";
+---
+<Layout title="Austyn Mair society">
+    <main class="fixed top-0 left-0 mx-auto min-h-screen p-0 text-base leading-relaxed text-white">
+        <Navbar />
+
+        <!-- <EventsTimeline />
+        <EventsAccordion /> -->
+        <Test />
+    </main>
+</Layout>

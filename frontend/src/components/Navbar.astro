@@ -1,7 +1,29 @@
 ---
-
+import { Image } from "astro:assets";
+import logo from "../assets/logo.png";
 ---
 
 <div class="navbar bg-base-100">
-  <a class="btn btn-ghost normal-case text-xl mb-0">AMsoc</a>
+  <div class="flex-1">
+    <a href="/" class="btn btn-ghost text-xl">AMsoc<!-- <Image src={logo} width=100 alt="Austyn Mair Society logo"></Image>--></a>
+  </div>
+  <div class="flex-none">
+    <ul class="menu menu-horizontal px-1 text-landing">
+      <!-- <li><a href="/about">About</a></li> -->
+      <li><a href="/events">Events</a></li>
+      <!-- <li><a href="/resources">Resources</a></li> -->
+      <li><a href="/sponsors">Sponsors</a></li>
+      <!-- <li>
+        <details>
+          <summary>
+            More
+          </summary>
+          <ul class="p-2 bg-base-100 rounded-t-none">
+            <li><a>Link 1</a></li>
+            <li><a>Link 2</a></li>
+          </ul>
+        </details>
+      </li> -->
+    </ul>
+  </div>
 </div>
